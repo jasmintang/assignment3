@@ -1,5 +1,7 @@
 import os
+import re
 from textblob import TextBlob
+
 os.getcwd()
 #get the current directory
 os.chdir('/Users/yamintang/Desktop/FE_595_Financial_Technology/assignment3/download_txt')
@@ -12,15 +14,26 @@ import glob
 # List inflammation data files from the source directory
 source_dir = "/Users/yamintang/Desktop/FE_595_Financial_Technology/assignment3/download_txt"
 Female_characters_paths = glob.glob(source_dir + "/Female_Characters*.txt")
+Male_characters_paths = glob.glob(source_dir + "/Male_Characters*.txt")
 
-# Iterate over the files
+for fp in Female_characters_paths:
+    with open('female_characters', 'w') as outfile:
+        for name in fp:
+            with open(fp) as infile:
+                for line in infile:
+                    outfile.write(line)
+                outfile.write('\n')
 
-for fp in os.listdir(Female_characters_paths):
-    file_female = fp)
-    print(file_female)
-# Open the source file in read mode
-    with open(fp, 'r') as f:
-#Parse the output file name, combine the result_dir folder-path and the filename of the input file
-    output_fp = os.path.join(result_dir, file_female)
+for fp in Male_characters_paths:
+    with open('male_characters', 'w') as outfile:
+        for name in fp:
+            with open(fp) as infile:
+                for line in infile:
+                    outfile.write(line)
+                outfile.write('\n')
+
+
+
+
 
 
