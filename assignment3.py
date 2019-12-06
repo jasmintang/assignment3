@@ -1,20 +1,18 @@
 import os
-import re
 import sys
+import re
+from pprint import pprint
+import glob
 from importlib import reload
 from textblob import TextBlob
 import pandas as pd
 from collections import Counter
 
-os.getcwd()
-# get the current directory
 os.chdir('/Users/yamintang/Desktop/FE_595_Financial_Technology/assignment3/download_txt')
 # change directory---you can setup your path in ' '
 
 # 1. Merge all of 10 files from people posted on the discussion
 # board into a single file with a Python script.
-
-import glob
 
 # List inflammation data files from the source directory
 source_dir = "/Users/yamintang/Desktop/FE_595_Financial_Technology/assignment3/download_txt"
@@ -37,11 +35,9 @@ for fp in Male_characters_paths:
                     outfile.write(line)
                 outfile.write('\n')
 
-
 # 2.Write a second script that finds the best and worst character of each gender (based on sentiment analysis)
 # and groups them together into the original format of the joke. (Reminder: He’s, She’s, They fight crime!)
 
-os.chdir('/Users/yamintang/Desktop/FE_595_Financial_Technology/assignment3/download_txt')
 reload(sys)
 sys.getdefaultencoding()
 f = 'female_characters.txt'
@@ -49,37 +45,45 @@ f_c = open(f)
 female = f_c.read()
 blob = TextBlob(female)
 np = blob.noun_phrases
-Str_np = ' '.join([str(elem) for elem in np])
+
+
 # convert list to str
 
-f_cha = []
-for i in np:
-    i = ''.join(i)
-    blob = TextBlob(i)
-    f_cha.append([blob.sentiment.polarity, i])
-print(f_cha)
-# calculate all noun_phrases polarity
-f_char = pd.DataFrame(f_cha)
-f_char = f_char.sort_values(by=0, ascending=False)
 # order the value of polarity
 
-__her_data = dict()
-for (i, j) in zip(f_char[0], f_char[1]):
-    __her_data[j] = i
-key = []
-for i in __her_data:
-    key.append(i)
 
-print("Best 10 characters:")
-group_most = []
-for i in range(len(key)):
-    if i > 9:
-        break
-    group_most.append("She's a " + key[i] + ". They fight crime!")
+def text(x):
+    f_cha = []
+    for i in x:
+        i = ''.join(i)
+        blob = TextBlob(i)
+        f_cha.append([blob.sentiment.polarity, i])
+    return f_cha
 
-for i in group_most:
-    print(i)
+
+f_char = pd.DataFrame(text(np))
+f_char = f_char.sort_values(by=0, ascending=False)
+
+
+def positive(y):
+    key = []
+    group_most = []
+    __her_data = dict()
+    for (i, j) in zip(y[0], y[1]):
+        __her_data[j] = i
+    for i in __her_data:
+            key.append(i)
+    for i in range(len(key)):
+        if i > 9:
+            break
+        group_most.append("She's a " + key[i] + ". They fight crime!")
+    return group_most
+
+pprint("Best 10 characters:")
+pprint(positive(f_char))
+
 # result:
+# Best 10 characters:
 # She's a incredible destiny. They fight crime!
 # She's a brilliant psychic archaeologist. They fight crime!
 # She's a beautiful gypsy fairy princess. They fight crime!
@@ -91,29 +95,38 @@ for i in group_most:
 # She's a supernatural mutant nun. They fight crime!
 # She's a sarcastic renegade bodyguard. They fight crime!
 
-print("\n\nWorst 10 characters:")
-group_less = []
-for i in range(len(key)):
-    if i > 9:
-        break
-    group_less.append("She's a " + key[len(key)-i-1] + ". They fight crime!")
 
-for i in group_less:
-    print(i)
-#Worst 10 characters:
-#She's a evil twin sister. They fight crime!
-#She's a wrong time. They fight crime!
-#She's a wrong places. They fight crime!
-#She's a psychotic nymphomaniac vampire. They fight crime!
-#She's a wrong side. They fight crime!
-#She's a psychotic hypochondriac nun. They fight crime!
-#She's a wrong place. They fight crime!
-#She's a secret island. They fight crime!
-#She's a violent blonde mercenary. They fight crime!
-#She's a late maiden aunt. They fight crime!
+def negative(z):
+    key_1 = []
+    group_less = []
+    __re_data = dict()
+    for (i, b) in zip(z[0], z[1]):
+        __re_data[b] = i
+    for i in __re_data:
+        key_1.append(i)
+    for i in range(len(key_1)):
+        if i > 9:
+            break
+        group_less.append("She's a " + key_1[len(key_1) - i - 1] + ". They fight crime!")
+    return group_less
+
+
+pprint("Worst 10 characters:")
+pprint(negative(f_char))
+# Worst 10 characters:
+# She's a evil twin sister. They fight crime!
+# She's a wrong time. They fight crime!
+# She's a wrong places. They fight crime!
+# She's a psychotic nymphomaniac vampire. They fight crime!
+# She's a wrong side. They fight crime!
+# She's a psychotic hypochondriac nun. They fight crime!
+# She's a wrong place. They fight crime!
+# She's a secret island. They fight crime!
+# She's a violent blonde mercenary. They fight crime!
+# She's a late maiden aunt. They fight crime!
+
 
 # group male_characters:
-os.chdir('/Users/yamintang/Desktop/FE_595_Financial_Technology/assignment3/download_txt')
 reload(sys)
 sys.getdefaultencoding()
 m = 'male_characters.txt'
@@ -123,34 +136,32 @@ blob = TextBlob(male)
 np_m = blob.noun_phrases
 # key words
 
-m_cha = []
-for i in np_m:
-    i = ''.join(i)
-    blob = TextBlob(i)
-    m_cha.append([blob.sentiment.polarity, i])
-print(m_cha)
+
 # calculate all noun_phrases polarity
-m_char = pd.DataFrame(m_cha)
+m_char = pd.DataFrame(text(np_m))
 m_char = m_char.sort_values(by=0, ascending=False)
 # order the value of polarity
 
-__him_data = dict()
-for (i, j) in zip(m_char[0], m_char[1]):
-    __him_data[j] = i
-key = []
-for i in __him_data:
-    key.append(i)
 
-print("Best 10 characters:")
-group_most = []
-for i in range(len(key)):
-    if i > 9:
-        break
-    group_most.append("He's a " + key[i] + ". They fight crime!")
+def positive_male(y):
+    key = []
+    group_most = []
+    __he_data = dict()
+    for (i, j) in zip(y[0], y[1]):
+        __he_data[j] = i
+    for i in __he_data:
+            key.append(i)
+    for i in range(len(key)):
+        if i > 9:
+            break
+        group_most.append("he's a " + key[i] + ". They fight crime!")
+    return group_most
 
-for i in group_most:
-    print(i)
+
+pprint("Best 10 characters:")
+pprint(positive_male(m_char))
 # result:
+# Best 10 characters:
 # He's a true killer. They fight crime!
 # He's a fast cars. They fight crime!
 # He's a ringling bros. They fight crime!
@@ -163,15 +174,23 @@ for i in group_most:
 # He's a one.\'. They fight crime!
 
 
-print("\n\nWorst 10 characters:")
-group_less = []
-for i in range(len(key)):
-    if i > 9:
-        break
-    group_less.append("He's a " + key[len(key)-i-1] + ". They fight crime!")
+def negative_male(z):
+    key_1 = []
+    group_less = []
+    __re_data = dict()
+    for (i, b) in zip(z[0], z[1]):
+        __re_data[b] = i
+    for i in __re_data:
+        key_1.append(i)
+    for i in range(len(key_1)):
+        if i > 9:
+            break
+        group_less.append("he's a " + key_1[len(key_1) - i - 1] + ". They fight crime!")
+    return group_less
 
-for i in group_less:
-    print(i)
+
+pprint("Worst 10 characters:")
+pprint(negative_male(m_char))
 # Worst 10 characters:
 # He's a fiendish moralistic cat burglar. They fight crime!
 # He's a fiendish albino cowboy. They fight crime!
@@ -185,21 +204,17 @@ for i in group_less:
 # He's a suave zombie vagrant. They fight crime!
 
 
-
-
-
 # 3.Write a third script that finds the 10 most common descriptions for characters.
+def common(a):
+    __my_data = []
+    for i in a[1]:
+        __my_data.append(i)
+        my_data = Counter(__my_data)
+        top_ten = my_data.most_common(10)
+    return top_ten
 
-__she_data = []
-for i in f_char[1]:
-    __she_data.append(i)
-she_data = Counter(__she_data)
 
-top_ten = she_data.most_common(10)
-for i in top_ten:
-    print(i)
-print(top_ten)
-
+pprint(common(f_char))
 # female result:
 # ('incredible destiny', 303)
 # ('satanic', 303)
@@ -212,16 +227,7 @@ print(top_ten)
 # ('opera singer', 202)
 # ('elvis', 202)
 
-__he_data = []
-for i in m_char[1]:
-    __he_data.append(i)
-he_data = Counter(__he_data)
-
-top_ten = he_data.most_common(10)
-for i in top_ten:
-    print(i)
-print(top_ten)
-
+pprint(common(m_char))
 # male result:
 # ('secret government programme', 495)
 # ('nobel', 396)
